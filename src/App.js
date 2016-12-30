@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import ActionCable from 'actioncable'
+import ActionCableProvider from 'react-actioncable-provider';
+const cable = ActionCable.createConsumer('ws://localhost:3000/cable')
+import MyApp from './MyApp';
 
 class App extends Component {
-  render() {
+
+  render(){
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <ActionCableProvider cable={cable}>
+        <MyApp cable={cable}/>
+      </ActionCableProvider>
     );
   }
+
 }
 
 export default App;
