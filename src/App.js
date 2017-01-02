@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
 const cable = ActionCable.createConsumer('ws://localhost:3000/cable')
-import MyApp from './Messages';
+import Messages from './Messages';
 
 import allReducers from './reducers/index';
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
@@ -17,7 +17,7 @@ class App extends Component {
   render(){
     return (
       <Provider store={store}>
-        <MyApp cable={cable}/>
+        <Messages cable={cable}/>
       </Provider>
     );
   }
