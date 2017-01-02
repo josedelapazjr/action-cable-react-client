@@ -1,54 +1,62 @@
 import React, {Component} from 'react';
 
-export const setSelectedCategory = (data) => {
-  console.log(data.name);
-};
+import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import * as actions from './actions/messageActions';
 
 class Messsages extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      messageList: [],
-    };
-  }
 
-  appendMessage2(data){
-    console.log('appendMessage2');
-    this.setState({messageList: this.state.messageList.push(data)});
+  appendMessage(data, self){
+    // Append new message
+    self.props.actions.appendMessage(data)
   }
 
   componentDidMount () {
-        this.subscription = this.props.cable.subscriptions.create(
-            'RoomChannel',
-            {
-                received (data) {
-                    setSelectedCategory(data);
-                }
-            }
-        )
-    }
+    let self = this;
+    this.subscription = this.props.cable.subscriptions.create('RoomChannel', {
+      received (data) {
+        this.appendMessage(data, self);
+      },
+      appendMessage: this.appendMessage
+    });
+  }
 
-    componentWillUnmount () {
-        this.subscription &&
-            this.props.cable.subscriptions.remove(this.subscription)
-    }
+  componentWillUnmount () {
+      this.subscription &&
+          this.props.cable.subscriptions.remove(this.subscription)
+  }
 
-    renderMessages(){
-      return this.state.messageList.map((data) =>  {
-        return (
-          <li>Test</li>
-        );
-      });
-    }
+  renderMessages(){
+    return this.props.messageList.map((data, index) =>  {
+      return (
+        <li key={index}>{data.name}: {data.content}</li>
+      );
+    });
+  }
 
-    render(){
-      return(
-        <ul>
+  render(){
+    return(
+      <div>
+        <h4>MESSAGES (using react)</h4>
+        <ul className="no-style">
           {this.renderMessages()}
         </ul>
-      );
-    }
-
+      </div>
+    );
+  }
 }
 
-export default Messsages;
+function mapStateToProps(state){
+  return{
+    messageList: state.messageList.all,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(actions, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Messsages);
