@@ -33,6 +33,11 @@
 		
 4. Wait for the incoming messages:
 
+		appendMessage(data, self){
+		    // Append new message
+		    self.props.actions.appendMessage(data)
+		  }
+
 		componentDidMount () {
 		  let self = this;
 		  this.subscription = this.props.cable.subscriptions.create('RoomChannel', {
